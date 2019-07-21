@@ -4,10 +4,10 @@ import execa from 'execa'
 import getStagedFiles from '../src/getStagedFiles'
 import runAll from '../src/runAll'
 import {
-  backupOriginalState,
-  applyModifications,
+  stashBackup,
+  restoreUnstagedChanges,
   restoreOriginalState,
-  dropBackupStashes
+  dropBackup
 } from '../src/gitWorkflow'
 
 jest.mock('../src/getStagedFiles')
@@ -24,10 +24,10 @@ describe('runAll', () => {
 
   afterEach(() => {
     global.console.clearHistory()
-    backupOriginalState.mockClear()
-    applyModifications.mockClear()
+    stashBackup.mockClear()
+    restoreUnstagedChanges.mockClear()
     restoreOriginalState.mockClear()
-    dropBackupStashes.mockClear()
+    dropBackup.mockClear()
   })
 
   afterAll(() => {
@@ -88,10 +88,10 @@ describe('runAll', () => {
       console.log(err)
     }
     expect(console.printHistory()).toMatchSnapshot()
-    expect(backupOriginalState).toHaveBeenCalledTimes(1)
-    expect(applyModifications).toHaveBeenCalledTimes(0)
+    expect(stashBackup).toHaveBeenCalledTimes(1)
+    expect(restoreUnstagedChanges).toHaveBeenCalledTimes(0)
     expect(restoreOriginalState).toHaveBeenCalledTimes(1)
-    expect(dropBackupStashes).toHaveBeenCalledTimes(1)
+    expect(dropBackup).toHaveBeenCalledTimes(1)
   })
 
   it('should warn if the argument length is longer than what the platform can handle', async () => {
@@ -126,10 +126,10 @@ describe('runAll', () => {
       console.log(err)
     }
     expect(console.printHistory()).toMatchSnapshot()
-    expect(backupOriginalState).toHaveBeenCalledTimes(1)
-    expect(applyModifications).toHaveBeenCalledTimes(0)
+    expect(stashBackup).toHaveBeenCalledTimes(1)
+    expect(restoreUnstagedChanges).toHaveBeenCalledTimes(0)
     expect(restoreOriginalState).toHaveBeenCalledTimes(1)
-    expect(dropBackupStashes).toHaveBeenCalledTimes(1)
+    expect(dropBackup).toHaveBeenCalledTimes(1)
   })
 
   it('should reject promise when error during getStagedFiles', async () => {
@@ -157,9 +157,9 @@ describe('runAll', () => {
       console.log(err)
     }
     expect(console.printHistory()).toMatchSnapshot()
-    expect(backupOriginalState).toHaveBeenCalledTimes(0)
-    expect(applyModifications).toHaveBeenCalledTimes(0)
+    expect(stashBackup).toHaveBeenCalledTimes(0)
+    expect(restoreUnstagedChanges).toHaveBeenCalledTimes(0)
     expect(restoreOriginalState).toHaveBeenCalledTimes(0)
-    expect(dropBackupStashes).toHaveBeenCalledTimes(0)
+    expect(dropBackup).toHaveBeenCalledTimes(0)
   })
 })
