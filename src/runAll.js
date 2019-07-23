@@ -69,7 +69,8 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
     )
   }
 
-  const tasks = (await generateTasks({ config, cwd, gitDir, files, relative })).map(task => ({
+  const tasks = await generateTasks({ config, cwd, gitDir, files, relative })
+  const listrTasks = tasks.map(task => ({
     title: `Running tasks for ${task.pattern}`,
     task: async () =>
       new Listr(
@@ -97,7 +98,7 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
 
   // If all of the configured "linters" should be skipped
   // avoid executing any lint-staged logic
-  if (tasks.every(task => task.skip())) {
+  if (listrTasks.every(task => task.skip())) {
     logger.log('No staged files match any of provided globs.')
     return 'No tasks to run.'
   }
@@ -112,7 +113,7 @@ https://github.com/okonet/lint-staged#using-js-functions-to-customize-linter-com
       },
       {
         title: 'Running tasks...',
-        task: () => new Listr(tasks, { ...listrOptions, concurrent: true, exitOnError: false })
+        task: () => new Listr(listrTasks, { ...listrOptions, concurrent: true, exitOnError: false })
       },
       {
         title: 'Restoring original state due to errors...',
